@@ -38,9 +38,8 @@ exports.login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ message: "❌ Invalid credentials" });
 
-    // Redirect to homepage
-    console.log("Login Success");
-    res.redirect("/");
+    // ✅ Send success response without redirection
+    res.json({ message: "✅ Login successful", role: user.role, redirect: "../../frontend/src/pages/HomePage" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "❌ Login failed!" });
