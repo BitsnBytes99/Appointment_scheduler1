@@ -1,12 +1,7 @@
-const express = require("express");
-const router = express.Router();
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const db = require("../config/db");
-const { SECRET_KEY } = require("../../backend/config/db");
 
-// Signup API
-router.post("/signup", async (req, res) => {
+exports.signup = async (req, res) => {
   try {
     const { name, email, password, role = "customer" } = req.body;
 
@@ -25,15 +20,16 @@ router.post("/signup", async (req, res) => {
     console.error(err);
     res.status(500).json({ message: "❌ Signup failed!" });
   }
-});
+};
 
-// Login API
-router.post("/login", async (req, res) => {
+exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
     // Fetch user by email
     const [userResult] = await db.promise().query("SELECT * FROM users WHERE email = ?", [email]);
+
+    // Ensure user exists
     if (userResult.length === 0) return res.status(401).json({ message: "❌ Invalid credentials" });
 
     const user = userResult[0];
@@ -42,14 +38,10 @@ router.post("/login", async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ message: "❌ Invalid credentials" });
 
-    // Generate JWT Token
-    const token = jwt.sign({ id: user.id, role: user.role }, SECRET_KEY, { expiresIn: "2h" });
-
-    res.json({ message: "✅ Login successful", token, role: user.role });
+    // ✅ Send success response without redirection
+    res.json({ message: "✅ Login successful", role: user.role, redirect: "../../frontend/src/pages/HomePage" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "❌ Login failed!" });
   }
-});
-
-module.exports = router;
+};

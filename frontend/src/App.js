@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Login from "./pages/Login";
+import HomePage from "./pages/HomePage";
 import Signup from "./pages/Signup";
 import AdminDashboard from "./pages/AdminDashboard";
 
@@ -19,6 +20,7 @@ const App = () => {
     <Router>
       <div style={{ textAlign: "center", marginTop: "50px" }}>
         <Routes>
+        <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/admin" element={userRole === "admin" ? <AdminDashboard /> : <Navigate to="/login" />} />
